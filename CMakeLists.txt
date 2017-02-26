@@ -133,8 +133,11 @@ if(${use_openssl} OR ${use_wsio})
         set(OPENSSL_ROOT_DIR $ENV{OpenSSLDir} CACHE PATH "")
     endif()
 
-    find_package(OpenSSL REQUIRED)
+    if(!${ANDROID})
+         find_package(OpenSSL )
+    endif()
     include_directories(${OPENSSL_INCLUDE_DIR})
+
 endif()
 
 # Start of variables used during install
@@ -516,6 +519,7 @@ if(${use_http})
             target_link_libraries(aziotsharedutil crypt32 winhttp)
         endif()
     else()
+        if (!${ANDROID})
         # try pkg-config first
         find_package(PkgConfig)
         if(PKG_CONFIG_FOUND)
@@ -530,8 +534,9 @@ if(${use_http})
         set(CURL_FIND_REQUIRED 1)
         find_package_handle_standard_args(CURL DEFAULT_MSG CURL_LIBRARIES)
 
-        include_directories(${CURL_INCLUDE_DIRS})
         target_link_libraries(aziotsharedutil ${CURL_LIBRARIES})
+        endif()
+        include_directories(${CURL_INCLUDE_DIRS})
     endif()
 endif()
 
